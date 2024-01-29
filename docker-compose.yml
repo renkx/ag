@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: ${IMAGE_PREFIX_DOMAIN}renkx/nginx:latest
+    container_name: nginx
+    hostname: nginx
+    init: true
+    volumes:
+      - ./www:/www/:rw
+      - ./conf/default:/conf:rw
+      - ./conf/default:/etc/nginx/conf.d/:rw
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx/:rw
+      # 公共配置
+      - ./conf/nginx/common:/common:ro
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
+    network_mode: "host"
+
+  ag:
+    image: ${IMAGE_PREFIX_DOMAIN}renkx/xray:latest
+    container_name: ag
+    hostname: ag
+    init: true
+    volumes:
+      - ./conf/default:/etc/xray/:rw
+      - ./logs/ag:/var/log/xray/:rw
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
+    network_mode: "host"
+
+  sd:
+    image: ${IMAGE_PREFIX_DOMAIN}renkx/smartdns:latest
+    container_name: sd
+    hostname: sd
+    init: true
+    volumes:
+      - ./conf/smartdns/${SD_DIR}:/etc/smartdns/:rw
+      - ./conf/default:/conf:rw
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
+    network_mode: "host"
