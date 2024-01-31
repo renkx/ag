@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   nginx:
+    # 用的 nginx:1.24.0-alpine3.17
     image: ${IMAGE_PREFIX_DOMAIN}renkx/nginx:latest
     container_name: nginx
     hostname: nginx
