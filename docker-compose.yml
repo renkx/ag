@@ -31,7 +31,6 @@ services:
     init: true
     volumes:
       - ./conf/default:/etc/xray/:rw
-      - ./logs/ag:/var/log/xray/:rw
     restart: always
     logging:
       driver: "json-file"
