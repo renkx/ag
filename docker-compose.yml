@@ -54,3 +54,41 @@ services:
         max-size: "1m"
         max-file: "3"
     network_mode: "host"
+
+  spm:
+    image: asdjkm1234/smokeping-master:latest
+    container_name: spm
+    hostname: spm
+    init: true
+    volumes:
+      - ./conf/default/smokeping_config:/usr/local/smokeping/etc:rw
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - "8088:80"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
+    networks:
+      - default
+
+  sps:
+    image: asdjkm1234/smokeping-slave:latest
+    container_name: sps
+    hostname: sps
+    init: true
+    restart: always
+    environment:
+      TZ: "Asia/Shanghai"
+      SMOKEPING_MASTER_URL: "${SMOKEPING_MASTER_HOST}/smokeping/smokeping.fcgi.dist"
+      SMOKEPING_SHARED_SECRET: "${SMOKEPING_SHARED_SECRET}"
+      SMOKEPING_SLAVE_NAME: "${SMOKEPING_SLAVE_NAME}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
+    network_mode: "host"
