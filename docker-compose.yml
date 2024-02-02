@@ -80,6 +80,8 @@ services:
     container_name: sps
     hostname: sps
     init: true
+    tty: true
+    stdin_open: true
     restart: always
     environment:
       TZ: "Asia/Shanghai"
