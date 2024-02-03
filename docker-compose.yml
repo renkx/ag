@@ -8,6 +8,8 @@ services:
     hostname: nginx
     init: true
     volumes:
+      # 共享内存
+      - /dev/shm:/dev/shm
       - ./www:/www/:rw
       - ./conf/default:/conf:rw
       - ./conf/default:/etc/nginx/conf.d/:rw
@@ -30,6 +32,8 @@ services:
     hostname: ag
     init: true
     volumes:
+      # 共享内存
+      - /dev/shm:/dev/shm
       - ./conf/default:/etc/xray/:rw
     restart: always
     logging:
