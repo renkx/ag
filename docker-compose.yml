@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nginx:
-    # 用的 nginx:1.26.2-alpine3.20-slim
+    # 用的 nginx:1.28.1-alpine3.23-slim
     image: ${IMAGE_PREFIX_DOMAIN}renkx/nginx:latest
     container_name: nginx
     hostname: nginx
@@ -44,6 +44,7 @@ services:
     network_mode: "host"
 
   sd:
+    # 用的 pymumu/smartdns:latest
     image: ${IMAGE_PREFIX_DOMAIN}renkx/smartdns:latest
     container_name: sd
     hostname: sd
