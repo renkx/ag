@@ -69,7 +69,7 @@ services:
     environment:
       TZ: "Asia/Shanghai"
     ports:
-      - "25774:25774"
+      - "127.0.0.1:25774:25774"
     logging:
       driver: "json-file"
       options:
