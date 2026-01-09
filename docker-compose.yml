@@ -1,6 +1,6 @@
 services:
   nginx:
-    # 用的 nginx:1.28.1-alpine3.23-slim
+    # 用的 nginx:1.29.4-alpine3.23-slim
     image: ${IMAGE_PREFIX_DOMAIN}renkx/nginx:latest
     container_name: nginx
     hostname: nginx
@@ -58,18 +58,18 @@ services:
         max-file: "3"
     network_mode: "host"
 
-  spm:
-    image: asdjkm1234/smokeping-master:latest
-    container_name: spm
-    hostname: spm
+  komari:
+    image: ghcr.io/komari-monitor/komari:latest
+    container_name: komari
+    hostname: komari
     init: true
     volumes:
-      - ./conf/default/smokeping_config:/usr/local/smokeping/etc:rw
+      - ~/data/komari:/app/data
     restart: always
     environment:
       TZ: "Asia/Shanghai"
     ports:
-      - "8088:80"
+      - "25774:25774"
     logging:
       driver: "json-file"
       options:
@@ -77,23 +77,3 @@ services:
         max-file: "3"
     networks:
       - default
-
-  sps:
-    image: asdjkm1234/smokeping-slave:latest
-    container_name: sps
-    hostname: sps
-    init: true
-    tty: true
-    stdin_open: true
-    restart: always
-    environment:
-      TZ: "Asia/Shanghai"
-      SMOKEPING_MASTER_URL: "${SMOKEPING_MASTER_HOST}/smokeping/smokeping.fcgi.dist"
-      SMOKEPING_SHARED_SECRET: "${SMOKEPING_SHARED_SECRET}"
-      SMOKEPING_SLAVE_NAME: "${SMOKEPING_SLAVE_NAME}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-        max-file: "3"
-    network_mode: "host"
