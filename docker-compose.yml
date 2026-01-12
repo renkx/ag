@@ -30,9 +30,8 @@ services:
     hostname: ag
     init: true
     volumes:
-      # 共享内存
-      - /dev/shm:/dev/shm
       - ./conf/default:/etc/xray/:rw
+      - ./conf/ag/entrypoint.sh:/entrypoint.sh:rw
     restart: always
     logging:
       driver: "json-file"
