@@ -58,7 +58,7 @@ services:
     network_mode: "host"
 
   realm:
-    image: ${IMAGE_PREFIX_DOMAIN}renkx/smartdns:realm2
+    image: ${IMAGE_PREFIX_DOMAIN}renkx/realm2:latest
     container_name: realm
     hostname: realm
     init: true
