@@ -57,6 +57,22 @@ services:
         max-file: "3"
     network_mode: "host"
 
+  realm:
+    image: ${IMAGE_PREFIX_DOMAIN}renkx/smartdns:realm2
+    container_name: realm
+    hostname: realm
+    init: true
+    volumes:
+      - ./conf/default/realm.toml:/etc/realm/realm.toml:rw
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
+    command: -c /etc/realm/realm.toml
+    network_mode: "host"
+
   komari:
     image: ghcr.io/komari-monitor/komari:latest
     container_name: komari
