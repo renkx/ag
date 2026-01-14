@@ -1,6 +1,5 @@
 services:
   nginx:
-    # 用的 nginx:1.29.4-alpine3.23-slim
     image: ${IMAGE_PREFIX_DOMAIN}renkx/nginx:latest
     container_name: nginx
     hostname: nginx
