@@ -29,9 +29,8 @@ else
     PARAMS+=(-f "$BASE_COMPOSE")
 fi
 
-# --- 3. 执行 ---
-log_msg="Executing: docker compose ${PARAMS[*]} $*"
-# 最终生成的参数
-echo "$log_msg"
+# 最终生成的参数，日志重定向到 stderr (标准错误流)，否则会被外部调用获取到错误信息
+echo "Executing: docker compose ${PARAMS[*]} $*" >&2
 
+# --- 3. 执行 ---
 exec docker compose "${PARAMS[@]}" "$@"
