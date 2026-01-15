@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 获取脚本真实的物理路径，并进入该目录
+cd "$(dirname "$(readlink -f "$0")")" || exit 1
+
 # --- 路径配置 ---
 BASE_ENV="./default.env"
 EXTRA_ENV="./conf/default/docker.env"
