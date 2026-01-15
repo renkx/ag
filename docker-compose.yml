@@ -71,23 +71,3 @@ services:
         max-file: "3"
     command: -c /etc/realm/realm.toml
     network_mode: "host"
-
-  komari:
-    image: ghcr.io/komari-monitor/komari:latest
-    container_name: komari
-    hostname: komari
-    init: true
-    volumes:
-      - ~/data/komari:/app/data
-    restart: always
-    environment:
-      TZ: "Asia/Shanghai"
-    ports:
-      - "127.0.0.1:25774:25774"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-        max-file: "3"
-    networks:
-      - default
