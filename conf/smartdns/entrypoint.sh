@@ -113,6 +113,13 @@ fi
     echo "# --- End of Automatically Appended Modules ---"
 } >> "$FINAL_CONF"
 
+# --- 启动前打印最终配置 ---
+echo "========================================"
+echo "   FINAL SMARTDNS CONFIGURATION        "
+echo "========================================"
+cat "$FINAL_CONF"
+echo "========================================"
+
 # --- 5. 启动 ---
 echo "SmartDNS starting with $SERVER_REGION mode..."
 exec /usr/sbin/smartdns -f -x -c "$FINAL_CONF"
