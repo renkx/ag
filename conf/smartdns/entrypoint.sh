@@ -10,7 +10,7 @@ FINAL_CONF="$INTERNAL_DIR/smartdns.conf"
 INTERNAL_TEMPLATE="$INTERNAL_DIR/smartdns-internal.conf"
 
 # 创建内部目录
-mkdir -p "$INTERNAL_DIR" "$EXTRA_CONFS_DIR"
+mkdir -p "$INTERNAL_DIR"
 
 # --- 1. 处理 DDNS/分流规则 (ddns-rules.conf) ---
 if [ -f "$EXTERNAL_DIR/ddns-rules.conf" ]; then
@@ -28,36 +28,38 @@ domain-rules /jobuse.cn/ -no-cache -no-serve-expired -speed-check-mode none -rr-
 EOF
 fi
 
-# --- 2. 处理上游保底配置 ---
-if [ "$SERVER_REGION" = "CN" ]; then
-    SPEED_MODE="ping,tcp:443,tcp:80" # 国内 Ping 优先
-    if [ -f "$EXTERNAL_DIR/default-cn.conf" ]; then
-        UPSTREAM_FINAL="$EXTERNAL_DIR/default-cn.conf"
-    else
-        UPSTREAM_FINAL="$INTERNAL_DIR/default-cn-internal.conf"
+# --- 2. 处理上游配置 ---
+# 优先寻找通用的外部上游配置 upstream.conf
+if [ -f "$EXTERNAL_DIR/upstream.conf" ]; then
+    echo "Using custom upstream config: $EXTERNAL_DIR/upstream.conf"
+    UPSTREAM_FINAL="$EXTERNAL_DIR/upstream.conf"
+else
+    # 进入保底生成逻辑
+    if [ "$SERVER_REGION" = "CN" ]; then
+        UPSTREAM_FINAL="$INTERNAL_DIR/upstream-internal.conf"
         cat > "$UPSTREAM_FINAL" <<EOF
 server-tls 223.5.5.5 -group china -group ddns
 server-tls 120.53.53.53 -group china
 EOF
-    fi
-else
-    SPEED_MODE="tcp:443,tcp:80,ping" # 国外 TCP 优先
-    if [ -f "$EXTERNAL_DIR/default-global.conf" ]; then
-        UPSTREAM_FINAL="$EXTERNAL_DIR/default-global.conf"
     else
-        UPSTREAM_FINAL="$INTERNAL_DIR/default-global-internal.conf"
+        UPSTREAM_FINAL="$INTERNAL_DIR/upstream-internal.conf"
         cat > "$UPSTREAM_FINAL" <<EOF
 server-tls 8.8.8.8 -group foreign
 server-tls 1.1.1.1 -group foreign -group ddns
 EOF
     fi
+    echo "No custom upstream found. Generated internal $SERVER_REGION defaults."
 fi
+
+# 根据地域决定默认测速模式 国内ping优先，国外tcp
+[ "$SERVER_REGION" = "CN" ] && SPEED_MODE="ping,tcp:443,tcp:80" || SPEED_MODE="tcp:443,tcp:80,ping"
 
 # --- 3. 确定并刷新主配置 smartdns.conf ---
 if [ -f "$EXTERNAL_DIR/smartdns.conf" ]; then
     echo "Refreshing $FINAL_CONF from custom $EXTERNAL_DIR/smartdns.conf"
     cp "$EXTERNAL_DIR/smartdns.conf" "$FINAL_CONF"
 else
+
     echo "Generating internal template and refreshing $FINAL_CONF..."
     # 始终生成/更新一个内部保底模板供参考
     cat > "$INTERNAL_TEMPLATE" <<EOF
@@ -95,20 +97,24 @@ EOF
     cp "$INTERNAL_TEMPLATE" "$FINAL_CONF"
 fi
 
-# --- 4. 有序汇编配置 (解决 SC2129 和 SC2012 问题) ---
+# --- 4. 有序汇编配置 ---
 {
     echo ""
     echo "# --- Start of Automatically Appended Modules ---"
     echo "conf-file $UPSTREAM_FINAL"
     echo "conf-file $DDNS_CONF"
 
-    # 解决 SC2012: 使用 find 代替 ls 排序加载 conf.d 下的配置文件
-    # -maxdepth 1: 只在当前目录下找； -name "*.conf": 匹配后缀； sort: 保证有序
-    find "$EXTRA_CONFS_DIR" -maxdepth 1 -name "*.conf" | sort | while read -r f; do
-        if [ -f "$f" ]; then
-            echo "conf-file $f"
-        fi
-    done
+    # 只有当宿主机挂载的 conf.d 目录存在时才进行扫描
+    if [ -d "$EXTRA_CONFS_DIR" ]; then
+        echo "Scanning extra configurations in $EXTRA_CONFS_DIR..." >&2
+        find "$EXTRA_CONFS_DIR" -maxdepth 1 -name "*.conf" | sort | while read -r f; do
+            if [ -f "$f" ]; then
+                echo "conf-file $f"
+            fi
+        done
+    else
+        echo "Notice: Extra config directory $EXTRA_CONFS_DIR not found, skipping." >&2
+    fi
 
     echo "# --- End of Automatically Appended Modules ---"
 } >> "$FINAL_CONF"
