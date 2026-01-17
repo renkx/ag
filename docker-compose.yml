@@ -45,15 +45,18 @@ services:
     container_name: sd
     hostname: sd
     init: true
+    environment:
+      - SERVER_REGION=${SD_SERVER_REGION:-GLOBAL}
     volumes:
-      - ./conf/smartdns/${SD_DIR}:/etc/smartdns/:rw
       - ./conf/default:/conf:rw
+      - ./conf/smartdns/entrypoint.sh:/entrypoint.sh:rw
     restart: always
     logging:
       driver: "json-file"
       options:
         max-size: "1m"
         max-file: "3"
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     network_mode: "host"
 
   realm:
