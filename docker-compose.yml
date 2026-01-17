@@ -5,10 +5,11 @@ services:
     hostname: nginx
     init: true
     volumes:
+      # 容器共享目录
+      - /ag-data:/conf:rw
       # 共享内存
       - /dev/shm:/dev/shm
       - ./www:/www/:rw
-      - ./conf/default:/conf:rw
       - ./conf/default:/etc/nginx/conf.d/:rw
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # 公共配置
