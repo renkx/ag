@@ -107,10 +107,9 @@ fi
     # 只有当宿主机挂载的 conf.d 目录存在时才进行扫描
     if [ -d "$EXTRA_CONFS_DIR" ]; then
         echo "Scanning extra configurations in $EXTRA_CONFS_DIR..." >&2
-        find "$EXTRA_CONFS_DIR" -maxdepth 1 -name "*.conf" | sort | while read -r f; do
-            if [ -f "$f" ]; then
-                echo "conf-file $f"
-            fi
+        # -maxdepth 1: 不递归子目录; -type f: 只匹配文件; -name "*.conf": 匹配后缀
+        find "$EXTRA_CONFS_DIR" -maxdepth 1 -type f -name "*.conf" | sort | while read -r f; do
+            echo "conf-file $f"
         done
     else
         echo "Notice: Extra config directory $EXTRA_CONFS_DIR not found, skipping." >&2
