@@ -10,7 +10,7 @@ services:
       # 共享内存
       - /dev/shm:/dev/shm
       - ./www:/www/:rw
-      - ./conf/default:/etc/nginx/conf.d/:rw
+      - ./conf/default/nginx:/etc/nginx/conf.d/:rw
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # 公共配置
       - ./conf/nginx/common:/common:ro
