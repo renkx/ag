@@ -12,6 +12,8 @@ services:
       - ./www:/www/:rw
       - ./conf/default/nginx:/etc/nginx/conf.d/:rw
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # 日志，需要fail2ban处理日志
+      - /var/log/nginx/:/var/log/nginx/:rw
       # 公共配置
       - ./conf/nginx/common:/common:ro
     restart: always
