@@ -38,14 +38,36 @@ else
     if [ "$SERVER_REGION" = "CN" ]; then
         UPSTREAM_FINAL="$INTERNAL_DIR/upstream-internal.conf"
         cat > "$UPSTREAM_FINAL" <<EOF
-server-tls 223.5.5.5 -group china -group ddns
-server-tls 120.53.53.53 -group china
+server-tcp 180.184.1.1 -bootstrap-dns
+server-tcp 101.226.4.6 -bootstrap-dns
+server-tcp 2400:3200::1 -bootstrap-dns
+server-tcp 2400:3200:baba::1 -bootstrap-dns
+
+server-tls dot.360.cn -fallback
+server-quic dns.alidns.com -fallback
+server-https https://doh.360.cn/dns-query -fallback
+
+server-tls dns.alidns.com -group ddns
+server-tls dot.pub
+server-https https://dns.alidns.com/dns-query
+server-https https://doh.pub/dns-query
 EOF
     else
         UPSTREAM_FINAL="$INTERNAL_DIR/upstream-internal.conf"
         cat > "$UPSTREAM_FINAL" <<EOF
-server-tls 8.8.8.8 -group foreign
-server-tls 1.1.1.1 -group foreign -group ddns
+server-tcp 1.1.1.1 -bootstrap-dns
+server-tcp 8.8.8.8 -bootstrap-dns
+server-tcp 2001:4860:4860::8888 -bootstrap-dns
+server-tcp 2001:4860:4860::8844 -bootstrap-dns
+
+server-tls one.one.one.one -fallback
+server-tls dns.quad9.net -fallback
+server-https https://1.1.1.1/dns-query -fallback
+
+server-tls dns.cloudflare.com -group ddns
+server-tls dns.google
+server-https https://dns.cloudflare.com/dns-query -group ddns
+server-https https://dns.google/dns-query
 EOF
     fi
     echo "No custom upstream found. Generated internal $SERVER_REGION defaults."
@@ -71,28 +93,37 @@ bind-tcp 127.0.0.1:53
 # 日志级别 fatal,error,warn,notice,info,debug 默认error
 log-level warn
 
-# 缓存持久化
-cache-persist yes
-# 允许的最小TTL值
-rr-ttl-min 600
-# 开启过期缓存
-serve-expired yes
-# 三天失效
-serve-expired-ttl 259200
-# 此时间表示当缓存中域名TTL超时时，返回给客户端的TTL时间，让客户端在下列TTL时间后再次查询。
-serve-expired-reply-ttl 3
+# 3.2万条缓存
+cache-size 32768
+# 允许返回给客户的最大IP数量
+max-reply-ip-num 16
+
 # 开启域名预取
 prefetch-domain yes
+
+# 开启过期缓存
+serve-expired yes
+# 过期缓存服务最长超时时间
+serve-expired-ttl 129600
+# 此时间表示当缓存中域名TTL超时时，返回给客户端的TTL时间，让客户端在下列TTL时间后再次查询。
+serve-expired-reply-ttl 3
 # 过期缓存在多长时间未访问，主动进行预先获取
 serve-expired-prefetch-time 21600
-# 周期保存 cache 文件时间
-cache-checkpoint-time 86400
+
+# 允许的最小TTL值
+rr-ttl-min 60
+rr-ttl-max 28800
+rr-ttl-reply-max 14400
+
+# 缓存持久化
+cache-persist yes
+# 缓存持久化文件路径
+cache-file /var/cache/smartdns.cache
+# 运行期间每隔一小时保存一次（防止意外断电丢失）
+cache-checkpoint-time 3600
 
 # 测速选项顺序 (基于地域变量)
 speed-check-mode $SPEED_MODE
-
-# 双栈 IP 优选
-dualstack-ip-selection no
 EOF
     cp "$INTERNAL_TEMPLATE" "$FINAL_CONF"
 fi
