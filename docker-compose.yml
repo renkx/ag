@@ -51,7 +51,7 @@ services:
     environment:
       - SERVER_REGION=${SD_SERVER_REGION:-GLOBAL}
     volumes:
-      - /var/cache/smartdns.cache:/var/cache/smartdns.cache:rw
+      - /var/cache/smartdns:/var/cache:rw
       - ./conf/default:/conf:rw
       - ./conf/smartdns/entrypoint.sh:/entrypoint.sh:rw
     restart: always
