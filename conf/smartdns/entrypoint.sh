@@ -38,7 +38,7 @@ else
     if [ "$SERVER_REGION" = "CN" ]; then
         UPSTREAM_FINAL="$INTERNAL_DIR/upstream-internal.conf"
         cat > "$UPSTREAM_FINAL" <<EOF
-server-tcp 180.184.1.1 -bootstrap-dns
+server-tcp 223.5.5.5 -bootstrap-dns
 server-tcp 101.226.4.6 -bootstrap-dns
 server-tcp 2400:3200::1 -bootstrap-dns
 server-tcp 2400:3200:baba::1 -bootstrap-dns
@@ -73,8 +73,8 @@ EOF
     echo "No custom upstream found. Generated internal $SERVER_REGION defaults."
 fi
 
-# 根据地域决定默认测速模式 国内ping优先，国外tcp
-[ "$SERVER_REGION" = "CN" ] && SPEED_MODE="ping,tcp:443,tcp:80" || SPEED_MODE="tcp:443,tcp:80,ping"
+# 根据地域决定默认测速模式 都改为tcp
+[ "$SERVER_REGION" = "CN" ] && SPEED_MODE="tcp:443,tcp:80,ping" || SPEED_MODE="tcp:443,tcp:80,ping"
 
 # --- 3. 确定并刷新主配置 smartdns.conf ---
 if [ -f "$EXTERNAL_DIR/smartdns.conf" ]; then
