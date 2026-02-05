@@ -103,17 +103,21 @@ prefetch-domain yes
 
 # 开启过期缓存
 serve-expired yes
-# 过期缓存服务最长超时时间
-serve-expired-ttl 129600
+# 过期缓存最长只保留 600 秒
+# 超过秒数没更新的数据直接丢弃，强制重新查询，确保 IP 不会太旧
+serve-expired-ttl 600
 # 此时间表示当缓存中域名TTL超时时，返回给客户端的TTL时间，让客户端在下列TTL时间后再次查询。
 serve-expired-reply-ttl 3
-# 过期缓存在多长时间未访问，主动进行预先获取
-serve-expired-prefetch-time 21600
+# 过期缓存在 300 秒 未访问时，才停止预取
+# 或者理解为：只要这个记录在 300 秒 内被访问过，SmartDNS 就会尝试去更新它
+serve-expired-prefetch-time 300
 
-# 允许的最小TTL值
-rr-ttl-min 60
-rr-ttl-max 28800
-rr-ttl-reply-max 14400
+# 不锁定最小TTL值，否则会好心办坏事
+# rr-ttl-min 1
+# 返回的最大值不成超过这个秒数
+rr-ttl-max 3600
+# 这样即使 CDN 节点发生偏移，设备最多 1 分钟就会回过神来重查
+rr-ttl-reply-max 60
 
 # 缓存持久化
 cache-persist yes
