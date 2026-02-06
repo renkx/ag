@@ -76,6 +76,15 @@ fi
 # 根据地域决定默认测速模式 都改为tcp
 [ "$SERVER_REGION" = "CN" ] && SPEED_MODE="tcp:443,tcp:80,ping" || SPEED_MODE="tcp:443,tcp:80,ping"
 
+# 只要有 IPv6 默认网关，就认为该机器是双栈环境
+if command -v ip >/dev/null 2>&1 && ip -6 route show default | grep -q "default"; then
+    echo "Status: Dual-stack environment detected."
+    V6_BLOCK="no"
+else
+    echo "Status: IPv4-only environment (or no IPv6 route). Optimizing..."
+    V6_BLOCK="yes"
+fi
+
 # --- 3. 确定并刷新主配置 smartdns.conf ---
 if [ -f "$EXTERNAL_DIR/smartdns.conf" ]; then
     echo "Refreshing $FINAL_CONF from custom $EXTERNAL_DIR/smartdns.conf"
@@ -128,6 +137,9 @@ cache-checkpoint-time 3600
 
 # 测速选项顺序 (基于地域变量)
 speed-check-mode $SPEED_MODE
+
+# ipv6动态屏蔽逻辑
+force-AAAA-SOA $V6_BLOCK
 EOF
     cp "$INTERNAL_TEMPLATE" "$FINAL_CONF"
 fi
