@@ -121,12 +121,12 @@ serve-expired-reply-ttl 3
 # 或者理解为：只要这个记录在 300 秒 内被访问过，SmartDNS 就会尝试去更新它
 serve-expired-prefetch-time 300
 
-# 不锁定最小TTL值，否则会好心办坏事
-# rr-ttl-min 1
-# 返回的最大值不成超过这个秒数
+# 允许的最小 TTL 值
+rr-ttl-min 60
+# 返回的最大值不能超过这个秒数
 rr-ttl-max 3600
-# 这样即使 CDN 节点发生偏移，设备最多 1 分钟就会回过神来重查
-rr-ttl-reply-max 60
+# 这样即使 CDN 节点发生偏移，设备最多 10 分钟就会回过神来重查
+rr-ttl-reply-max 600
 
 # 缓存持久化
 cache-persist yes
