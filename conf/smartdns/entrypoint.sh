@@ -122,11 +122,11 @@ serve-expired-reply-ttl 3
 serve-expired-prefetch-time 300
 
 # 允许的最小 TTL 值
-rr-ttl-min 60
+# rr-ttl-min 60
 # 返回的最大值不能超过这个秒数
-rr-ttl-max 3600
+# rr-ttl-max 3600
 # 这样即使 CDN 节点发生偏移，设备最多 10 分钟就会回过神来重查
-rr-ttl-reply-max 600
+# rr-ttl-reply-max 600
 
 # 缓存持久化
 cache-persist yes
