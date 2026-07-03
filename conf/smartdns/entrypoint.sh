@@ -108,18 +108,18 @@ cache-size 32768
 max-reply-ip-num 16
 
 # 开启域名预取
-prefetch-domain yes
+# prefetch-domain yes
 
 # 开启过期缓存
-serve-expired yes
+# serve-expired yes
 # 过期缓存最长只保留 600 秒
 # 超过秒数没更新的数据直接丢弃，强制重新查询，确保 IP 不会太旧
-serve-expired-ttl 600
+# serve-expired-ttl 600
 # 此时间表示当缓存中域名TTL超时时，返回给客户端的TTL时间，让客户端在下列TTL时间后再次查询。
-serve-expired-reply-ttl 3
+# serve-expired-reply-ttl 3
 # 过期缓存在 300 秒 未访问时，才停止预取
 # 或者理解为：只要这个记录在 300 秒 内被访问过，SmartDNS 就会尝试去更新它
-serve-expired-prefetch-time 300
+# serve-expired-prefetch-time 300
 
 # 允许的最小 TTL 值
 # rr-ttl-min 60
@@ -136,7 +136,7 @@ cache-file /var/cache/smartdns.cache
 cache-checkpoint-time 3600
 
 # 测速选项顺序 (基于地域变量)
-speed-check-mode $SPEED_MODE
+# speed-check-mode $SPEED_MODE
 
 # ipv6动态屏蔽逻辑
 force-AAAA-SOA $V6_BLOCK
